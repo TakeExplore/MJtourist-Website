@@ -42,6 +42,10 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /.scss$/,
+        loaders: ["style", "css", "sass"]
+      },
+      {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: vueLoaderConfig
@@ -75,7 +79,7 @@ module.exports = {
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
       }
-    ]
+    ],
   },
   node: {
     // prevent webpack from injecting useless setImmediate polyfill because Vue
