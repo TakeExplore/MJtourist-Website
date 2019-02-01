@@ -3102,9 +3102,9 @@ input[type="checkbox"] {
   line-height: normal;
 }
 
-input[type="file"] {
-  display: block;
-}
+/*input[type="file"] {*/
+  /*display: block;*/
+/*}*/
 
 input[type="range"] {
   display: block;
