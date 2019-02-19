@@ -10,6 +10,7 @@
   import commonController from './commonController.vue'
   export default {
     name: "form_tripKnow",
+    props:['menuIndex'],
     components:{
       form_common,
       commonController
@@ -21,16 +22,19 @@
         item:''
       }
     },
+    watch: {
+      menuIndex : 'getList'
+    },
     created(){
       this.getList();
     },
     methods:{
       //服务端获取数据
       getList() {
+        this.show = true
         return this.axios.get("./static/json/content.json")
           .then(response => {
             this.list = response.data;
-            console.log(this.list);
           });
       },
       getItem(index){

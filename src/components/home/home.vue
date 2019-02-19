@@ -21,8 +21,9 @@
       </div>
     <!--板块3-->
       <tips-box />
-
     <!--板块4-->
+      <blog></blog>
+    <!--板块5-->
     <div id="fh5co-destination">
       <div class="tour-fluid">
         <div class="row">
@@ -61,9 +62,10 @@
 <script>
     import TipsBox from "../children/tipsBox";
     import Card from "../children/card";
+    import Blog from "../children/blog";
     export default {
       name: "home",
-      components: {Card, TipsBox},
+      components: {Card, TipsBox,Blog},
       data(){
         return{
           image:{
@@ -109,6 +111,37 @@
           }
         }
       },
+      created(){
+        this.getList();
+      },
+      methods:{
+        getList(){
+          let data = {
+            "a": 123,
+            "b": 123
+          }
+          $.ajax({
+            url: "http://47.106.198.169/admin/getcolumn",
+            type: "POST",
+            data: JSON.stringify(data),
+            xhrFields:{
+              withCredentials:true
+            },
+            headers: {
+              "content-type": "application/json;charset=utf-8",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Headers": "X-Requested-With",
+              "Access-Control-Allow-Credentials": 'true'
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+              console.log("失败")
+            },
+            success: function (res) {
+              console.log("上传前返回的参数:",res);
+            }
+          });
+        }
+      }
     }
 </script>
 

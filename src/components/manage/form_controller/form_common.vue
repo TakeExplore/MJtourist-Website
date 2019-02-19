@@ -64,7 +64,7 @@
         });
         console.log(index, row);
       },
-      //增加导航栏
+      //增加文章
       addColumn(){
         this.item = "";
         this.$emit("handleEdit",this.item)

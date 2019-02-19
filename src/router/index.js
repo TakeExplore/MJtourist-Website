@@ -11,7 +11,7 @@ import manage from '@/components/manage/manage.vue'
 
 Vue.use(Router)
 
-export default new Router({
+let menu = {
   routes: [
     {
       path: '/',
@@ -54,4 +54,5 @@ export default new Router({
       component:login,
     },
   ]
-})
+}
+export default new Router(menu)

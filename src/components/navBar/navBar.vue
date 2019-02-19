@@ -18,12 +18,12 @@
               </ul>
             </li>
             <li>
-              <el-dropdown>
+              <el-dropdown  @command="handleCommand">
                 <span class="el-dropdown-link">
-                  <router-link style="font-size: 16px;font-weight: normal" to="/login">登录</router-link>
+                  <router-link style="font-size: 16px;font-weight: normal" to="/login">{{username}}</router-link>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item>退出登录</el-dropdown-item>
+                  <el-dropdown-item command="退出成功">退出登录</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </li>
@@ -45,11 +45,13 @@
         activeIndex: '1',
         activeIndex2: '1',
         headerFixed: true,
-        list:[]
+        list:[],
+        username:"登录"
       };
     },
     created() {
-      this.getList()
+      this.getList();
+      this.checkState()
     },
     methods: {
       handleSelect(key, keyPath) {
@@ -63,6 +65,22 @@
             console.log(this.list);
           });
       },
+      checkState(){
+        if (window.sessionStorage.getItem("userName") !== null) {
+          this.username = window.sessionStorage.getItem("userName");
+        }
+      },
+      handleCommand(command){
+        sessionStorage.removeItem('userName');
+        console.log('123')
+        if (this.username === '登录'){
+          this.$message("您尚未登录");
+        } else {
+          this.username = '登录'
+          this.$forceUpdate();
+          this.$message(command);
+        }
+      }
     }
   }
 </script>

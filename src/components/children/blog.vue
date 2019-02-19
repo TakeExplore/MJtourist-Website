@@ -10,7 +10,7 @@
     </div>
     <div class="container">
       <div class="row row-bottom-padded-md">
-        <div class="col-lg-4 col-md-4 col-sm-6" v-for="item in card">
+        <div class="col-lg-4 col-md-4 col-sm-6" v-for="(item,index) in card" v-show="selectShow(index)">
           <div class="fh5co-blog animate-box">
             <a href="#"><img class="img-responsive" :src=item alt=""></a>
             <div class="blog-text">
@@ -44,6 +44,15 @@
             require('../../common/images/place-5.jpg'),
             require('../../common/images/place-6.jpg')
           ],
+        }
+      },
+      created(){
+      },
+      methods:{
+        selectShow(index){
+          if (index < 3){
+            return true
+          }
         }
       }
     }

@@ -59,7 +59,7 @@
         show:false,//控制栏目增加修改的组件是否显示
         list:"",//获取到的json
         menu:[],//改造后的json
-        item:[]//传到编辑页的导航项
+        item:[],//传到编辑页的导航项
       }
     },
     created() {
@@ -68,10 +68,26 @@
     methods:{
       //服务端获取数据
       getList() {
-        return this.axios.get("./static/json/menu.json")
+        let token = window.sessionStorage.getItem("token");
+        // if (token === null){
+        //   this.$router.push('/login')
+        //   this.$message.error("请先登录")
+        // }
+        return this.axios({
+          method:'GET',
+          url: "./static/json/menu.json",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          xhrFields:{
+            withCredentials:true
+          },
+        })
           .then(response => {
             this.list = response.data;
             console.log(this.list);
+          }).catch(function (error) {
+            console.log(error);
           });
       },
       //整理获取到的数据
@@ -107,10 +123,29 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
+          return this.axios({
+            method:'GET',
+            url: url,
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            data: row,
+            xhrFields:{
+              withCredentials:true
+            },
+          })
+            .then(response => {
+              if (response.data === 1){
+                this.$message({
+                  type: 'success',
+                  message: '删除成功!'
+                });
+              } else {
+                this.$message.error('删除失败!')
+              }
+            }).catch(function (error) {
+              console.log(error);
+            })
         }).catch(() => {
           this.$message({
             type: 'info',
@@ -121,11 +156,19 @@
       },
       //增加导航栏
       addColumn(){
-        this.item = "";
+        this.item = {
+          parent:this.list[1].title,
+          title:'',
+          desc:''
+        };
         this.show = true
       },
       //接收子组件传过来的值 判断是否显示
       OnShow(index){
+        this.list = '';
+        this.menu = [];
+        this.getList().then(() => this.getMenu(this.list,this.menu));
+        // location.reload();
         this.show = index
       }
     }

@@ -12,9 +12,9 @@
           <!--个人信息-->
           <form_Person v-show="menuIndex === '0'"></form_Person>
           <!--栏目类别管理-->
-          <form_colum v-show="menuIndex === '1'"></form_colum>
+          <form_column v-show="menuIndex === '1'"></form_column>
           <!--出行须知 旅游管理 酒店管理 攻略景点管理 联系我们管理-->
-          <form_controller v-show="menuIndex === '2'||menuIndex === '3'||menuIndex === '4'||menuIndex === '5'||menuIndex === '6'"></form_controller>
+          <form_controller :menuIndex="menuIndex" v-show="menuIndex === '2'||menuIndex === '3'||menuIndex === '4'||menuIndex === '5'||menuIndex === '6'"></form_controller>
         </el-main>
       </el-container>
     </el-container>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-  import form_colum from './form_colum/form_colum.vue'
+  import form_column from './form_colum/form_colum.vue'
   import form_controller from './form_controller/form_controller.vue'
   import form_Person from './form_Person.vue'
   import ma_menu from './menu.vue'
@@ -30,7 +30,7 @@
     name: "manage",
     components:{
       ma_menu,
-      form_colum,
+      form_column,
       form_controller,
       form_Person,
     },
