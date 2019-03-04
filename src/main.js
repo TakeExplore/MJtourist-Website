@@ -8,15 +8,21 @@ import VueAxios from 'vue-axios'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import './theme/element/index.css'
+import i18n from './i18n/i18n'
+import global from '../static/config.js'
 Vue.use(VueAxios, axios);
 Vue.use(ElementUI);
 
+Vue.prototype.GLOBAL = global
 Vue.config.productionTip = false
+
+// Vue.use(ElementUI,{locale})
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  i18n,
   components: { App },
   template: '<App/>'
 })

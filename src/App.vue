@@ -5,10 +5,13 @@
         <div ref="nav">
           <navBar></navBar>
         </div>
-        <div ref="banner">
+        <div ref="banner" >
           <Banner></Banner>
         </div>
         <router-view></router-view>
+        <div ref="order">
+          <order></order>
+        </div>
         <div ref="footer">
           <Footer></Footer>
         </div>
@@ -18,30 +21,18 @@
 </template>
 
 <script>
-  // import '../src/common/js/jquery.easing.1.3.js'
-  // import '../src/common/js/bootstrap.min.js'
-  // import '../src/common/js/jquery.waypoints.min.js'
-  // import '../src/common/js/sticky.js'
-  // import '../src/common/js/jquery.stellar.min.js'
-  // import '../src/common/js/hoverIntent.js'
-  // import '../src/common/js/superfish.js'
-  // import '../src/common/js/jquery.magnific-popup.min.js'
-  // import '../src/common/js/magnific-popup-options.js'
-  // import '../src/common/js/bootstrap-datepicker.min.js'
-  // import '../src/common/js/classie.js'
-  // import '../src/common/js/selectFx.js'
-  // import '../src/common/js/main.js'
-
   import navBar from '@/components/navBar/navBar'
   import Banner from "@/components/children/banner"
   import Footer from "@/components/children/introduce"
   import manage from "@/components/manage/manage"
+  import order from '@/components/order/order'
   export default {
     name: 'App',
-    components:{navBar, Banner, Footer,manage},
+    components:{navBar, Banner, Footer,manage,order},
     data(){
       return{
         path:this.$route.path,//获取当前所在路由
+        list:'',
       }
     },
     mounted(){
@@ -51,21 +42,22 @@
       $route() {
         this.path = this.$route.path;
         this.setCss();
-        console.log(this.path)
       }
     },
     methods:{
       setCss(){
         if (this.path === "/manage"||this.path === "/login" ){
           this.$refs.nav.style.display = 'none';
+          this.$refs.order.style.display = 'none';
           this.$refs.banner.style.display = 'none';
           this.$refs.footer.style.display = 'none';
         }else {
+          this.$refs.order.style.display = 'block';
           this.$refs.nav.style.display = 'block';
           this.$refs.banner.style.display = 'block';
           this.$refs.footer.style.display = 'block';
         }
-      }
+      },
     }
   }
 </script>
@@ -74,7 +66,6 @@
 
   @import '../src/common/sass/style.scss'
   @import '../src/common/css/animate.css'
-  /*@import '../src/common/css/icomoon.css'*/
   @import '../src/common/css/bootstrap.css'
   @import '../src/common/css/superfish.css'
   @import '../src/common/css/magnific-popup.css'

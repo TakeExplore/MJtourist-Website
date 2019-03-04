@@ -3,27 +3,47 @@
   <div id="fh5co-header-section" class="sticky-banner">
     <div class="container">
       <div class="nav-header">
-        <!--<a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle dark"><i></i></a>-->
-        <h1 id="fh5co-logo"><a href="/"><img :src=logo style="width: 15%">美加阳光旅行社</a></h1>
+        <h1 id="fh5co-logo"><a href="/"><img :src=logo style="width: 15%">{{$t('title.title')}}</a></h1>
         <nav id="fh5co-menu-wrap" role="navigation">
           <ul class="sf-menu" id="fh5co-primary-menu">
-            <li v-for="item of list">
-              <router-link :to="item.path">{{item.title}}
-                <i class="el-icon-caret-bottom" v-show="item.children"></i>
+            <li v-for="item of menu" v-if="language === 'zh'">
+              <router-link :to="item.path+'/'+item.id">{{item.cnname}}
+                <i class="el-icon-caret-bottom" v-show="item.son.length !== 0"></i>
               </router-link>
-              <ul v-show="item.children"  class="fh5co-sub-menu">
-                <li v-for="nav of item.children">
-                  <router-link :to="nav.path">{{nav.title}}</router-link>
+              <ul v-show="item.son.length !== 0" class="fh5co-sub-menu">
+                <li v-for="nav of item.son">
+                  <router-link :to="item.path+'/'+nav.id">{{nav.cnname}}</router-link>
+                </li>
+              </ul>
+            </li>
+            <li v-for="item of menu" v-if="language === 'en'">
+              <router-link :to="item.path+'/'+item.id">{{item.enname}}
+                <i class="el-icon-caret-bottom" v-show="item.son.length !== 0"></i>
+              </router-link>
+              <ul v-show="item.son.length !== 0" class="fh5co-sub-menu">
+                <li v-for="nav of item.son">
+                  <router-link :to="item.path+'/'+nav.id">{{nav.enname}}</router-link>
                 </li>
               </ul>
             </li>
             <li>
               <el-dropdown  @command="handleCommand">
                 <span class="el-dropdown-link">
-                  <router-link style="font-size: 16px;font-weight: normal" to="/login">{{username}}</router-link>
+                  <router-link style="font-size: 16px;font-weight: normal" :to=path v-html="username"></router-link>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="退出成功">退出登录</el-dropdown-item>
+                  <el-dropdown-item :command="$t('user.out')">{{$t('user.logout')}}</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </li>
+            <li>
+              <el-dropdown style="margin-top: 13px" @command="changeLocale">
+                <span class="el-dropdown-link">
+                  {{$t('language.language')}}<i class="el-icon-arrow-down el-icon--right"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="zh">{{$t('language.chinese')}}</el-dropdown-item>
+                  <el-dropdown-item command="en">{{$t('language.english')}}</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </li>
@@ -41,46 +61,98 @@
     components:{},
     data() {
       return {
-        logo: require('../../../static/images/logo.png'),
+        logo: require('../../../static/logo.png'),
         activeIndex: '1',
         activeIndex2: '1',
         headerFixed: true,
         list:[],
-        username:"登录"
+        menu:[],
+        path:"/login",
+        language:'zh',
+        username: this.$t('user.login')
       };
     },
-    created() {
-      this.getList();
-      this.checkState()
+    watch: {
+      '$route' (to, from) {
+        this.checkState()
+      }
+    },
+    async created() {
+      this.getColumn()
+      await this.checkState()
     },
     methods: {
       handleSelect(key, keyPath) {
         console.log(key, keyPath);
       },
-      //服务端获取导航栏数据
-      getList() {
-        return this.axios.get("./static/json/menu.json")
+      getColumn(){
+        let data = {"a": 123}
+        return this.axios({
+          method:'POST',
+          url: "http://47.106.198.169:8080/admin/getcolumn",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          crossDomain: true,
+          data: JSON.stringify(data),
+          xhrFields:{
+            withCredentials:true
+          },
+          async:false
+        })
           .then(response => {
-            this.list = response.data;
-            console.log(this.list);
+            // this.list = response.data
+            this.getMenu(response.data,this.menu)
+            // console.log(this.list);
+          }).catch(function (error) {
+            console.log(error);
           });
       },
+      getMenu(json,arr){
+        let a = 0;
+        for(let i in json){
+          if(json[i].cnname !== '主栏目'){
+            a  = json[i]
+            arr.push(a);
+          }
+        }
+        // console.log(this.menu)
+      },
       checkState(){
-        if (window.sessionStorage.getItem("userName") !== null) {
-          this.username = window.sessionStorage.getItem("userName");
+        if (sessionStorage.getItem("name") !== null) {
+          // this.$set(this.username,sessionStorage.getItem("name"))
+          this.username = sessionStorage.getItem("name");
+          // console.log(this.username)
+          this.path = '/'
+          this.$forceUpdate();
+        }else{
+          this.path = '/login'
+          this.username = this.$t('user.login')
+          localStorage.removeItem('shopping');//清除购物车
+          sessionStorage.clear(); //清除用户缓存
         }
       },
       handleCommand(command){
         sessionStorage.removeItem('userName');
-        console.log('123')
-        if (this.username === '登录'){
-          this.$message("您尚未登录");
+        // console.log('123')
+        if (this.username === this.$t('user.login')){
+          this.$message(this.$t('user.tips'));
         } else {
-          this.username = '登录'
+          this.username = this.$t('user.login')
           this.$forceUpdate();
+          this.path = '/login'
+          document.cookie = 'ticket' + '=;  expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+          localStorage.removeItem('shopping');//清除购物车
+          sessionStorage.clear(); //清除用户缓存
           this.$message(command);
         }
-      }
+      },
+      changeLocale(command){
+        this.language = command
+        let locale = this.$i18n.locale
+        this.$i18n.locale = command
+        console.log(command)
+      },
     }
   }
 </script>

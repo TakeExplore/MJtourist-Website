@@ -1,36 +1,39 @@
 <template>
   <div class="login">
     <div class="head">
-      <p><img :src=logo>美加阳光旅行社</p>
+      <p><img :src=logo>{{$t('title.title')}}</p>
     </div>
     <div class="card">
       <el-tabs class="box-card"  type="border-card" v-model="activeName">
-        <el-tab-pane label="登录" name="first">
+        <el-tab-pane :label = "$t('user.login')" name="first">
           <el-form  :model="logForm" status-icon :rules="loginRule" ref="logForm" label-width="70px" class="demo-ruleForm">
-            <el-form-item label="账号" prop="user">
+            <el-form-item :label = "$t('user.user')" prop="user">
               <el-input type="user" v-model="logForm.user" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="密码" prop="pass">
+            <el-form-item :label = "$t('user.pass')" prop="pass">
               <el-input type="password" v-model="logForm.pass" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item style="width: 74%">
-              <el-button type="primary" @click="loginForm('logForm')" style="width: 86%">登录</el-button>
+              <el-button type="primary" @click="loginForm('logForm')" style="width: 86%">{{$t('user.login')}}</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane label="注册" name="second">
+        <el-tab-pane :label = "$t('user.register')" name="second">
           <el-form :model="resForm" status-icon :rules="rules" ref="resForm" label-width="70px" class="demo-ruleForm">
-            <el-form-item label="账号" prop="user">
+            <el-form-item :label = "$t('user.user')" prop="user">
               <el-input type="user" v-model="resForm.user" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="密码" prop="pass">
+            <el-form-item :label = "$t('form.phone')" prop="phone">
+              <el-input type="user" v-model="resForm.phone" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item :label = "$t('user.pass')" prop="pass">
               <el-input type="password" v-model="resForm.pass" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="确认密码" prop="checkPass">
+            <el-form-item :label = "$t('user.checkpass')" prop="checkPass">
               <el-input type="password" v-model="resForm.checkPass" autocomplete="off" ></el-input>
             </el-form-item>
             <el-form-item style="width: 74%">
-              <el-button type="primary" @click="registeredForm('resForm')" style="width: 86%">注册</el-button>
+              <el-button type="primary" @click="registeredForm('resForm')" style="width: 86%">{{$t('user.register')}}</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -49,10 +52,10 @@
       //登录部分
       let checkUser = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入账号'));
+          callback(new Error(this.$t('notice.usernotice')));
         }
         if (value.match(/^([\u4E00-\uFA29]|[\uE7C7-\uE7F3]|[a-zA-Z0-9_-]){1,16}$/) === null){
-          callback(new Error('用户名不合法'))
+          callback(new Error(this.$t('notice.user')))
         }
         else {
           if (this.logForm.user !== '') {
@@ -63,7 +66,7 @@
       };
       let checkPass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入密码'));
+          callback(new Error(this.$t('notice.passnotice')));
         } else {
           if (this.logForm.checkPass !== '') {
           }
@@ -73,10 +76,10 @@
       //注册部分
       let checkName = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入账号'));
+          callback(new Error(this.$t('notice.usernotice')));
         }
         if (this.resForm.user.match(/^([\u4E00-\uFA29]|[\uE7C7-\uE7F3]|[a-zA-Z0-9_-]){1,16}$/) === null){
-          callback(new Error('用户名不合法'))
+          callback(new Error(this.$t('notice.usernotice')))
         }
         else {
           if (this.resForm.user !== '') {
@@ -85,9 +88,23 @@
           callback();
         }
       };
+      let checkPhone = (rule, value, callback) => {
+        if (value === '') {
+          callback(new Error(this.$t('notice.phone')));
+        }
+        if (!(/^(\+?1)?[2-9]\d{2}[2-9](?!11)\d{6}$/.test(this.resForm.phone)) || !(/^1[34578]\d{9}$/.test(this.resForm.phone))){
+          callback(new Error(this.$t('notice.phonenotice')))
+        }
+        else {
+          if (this.resForm.phone !== '') {
+            this.$refs.resForm.validateField('checkPass');
+          }
+          callback();
+        }
+      };
       let validatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入密码'));
+          callback(new Error(this.$t('notice.passnotice')));
         } else {
           if (this.resForm.checkPass !== '') {
             this.$refs.resForm.validateField('checkPass');
@@ -97,15 +114,15 @@
       };
       let validatePass2 = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请再次输入密码'));
+          callback(new Error(this.$t('notice.passagain')));
         } else if (value !== this.resForm.pass) {
-          callback(new Error('两次输入密码不一致!'));
+          callback(new Error(this.$t('notice.checkpass')));
         } else {
           callback();
         }
       };
       return{
-        logo: require('../../../static/images/logo.png'),
+        logo: require('../../../static/logo.png'),
         logForm: {
           pass: '',
           user: ''
@@ -113,7 +130,8 @@
         resForm: {
           pass: '',
           checkPass: '',
-          user: ''
+          user: '',
+          phone:''
         },
         loginRule:{
           pass: [
@@ -124,6 +142,9 @@
           ]
         },
         rules: {
+          phone: [
+            { validator: checkPhone, trigger: 'blur' }
+          ],
           pass: [
             { validator: validatePass, trigger: 'blur' }
           ],
@@ -147,7 +168,9 @@
               "passwd": this.logForm.pass
             };
             console.log(this.logForm.user)
-            let url = "http://47.106.198.169:8080/user/login"
+            // console.log(url)
+            let url = this.GLOBAL.login
+            // console.log(url)
             return this.axios({
               method:'POST',
               url: url,
@@ -162,35 +185,38 @@
               data:JSON.stringify(data)
             })
               .then(response => {
-                let cookie = response.data.substring(15)
-                console.log(response.data.slice(0,4))
-                if (response.data.slice(2,4) === "登录成功") {
+                console.log(response.data)
+                  // this.$router.push('/');
+                if (response.data.code === '111'){
                   this.$message({
-                    message: response.data.slice(0, 4),
-                    type: 'success'
+                    type: 'success',
+                    message: response.data.msg
                   });
-                  this.$router.push('/');
-                }else {
+                  sessionStorage.setItem("name",this.logForm.user);
+                  this.$router.push('/manage');
+                } else if (response.data.code === '000'){
                   this.$message({
-                    message: response.data,
-                    type: 'error'
+                    type: 'success',
+                    message: response.data.msg
                   });
+                  sessionStorage.setItem("name",this.logForm.user);
+                  localStorage.setItem('shopping', JSON.stringify({
+                    getman:this.logForm.user,
+                    commdityinfo :{},
+                  }));
+                  this.$router.push('/')
+                } else {
+                  this.$message.error(response.data.msg)
                 }
-                //   if (response.data.user.user === "admin") {
-                //     this.$router.push('/manage');
-                //   }else {
-                //     this.$router.push('/');
-                //   }
-
-                sessionStorage.setItem("ticket",cookie);
+                // sessionStorage.setItem("ticket",cookie);
               }).catch(function (error) {
                 console.log(error);
-        })
-      } else {
-        this.$message('请正确填写信息');
-  console.log('error submit!!');
-  return false;
-  }
+                })
+            } else {
+            this.$message(this.$t('notice.correct'));
+            console.log('error submit!!');
+            return false;
+          }
         });
       },
       //注册
@@ -198,28 +224,50 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             let data = {
-              "user": this.resForm.user,
-              "password": this.resForm.pass
+              "realname":this.resForm.user,
+              "telnum":this.resForm.phone,
+              "passwd":this.resForm.pass
             };
-            let url = "../static/json/user.json"
-            let msg = {
-              success:"注册成功",
-              error:"已存在该用户名"
-            }
-            this.submitData(url,data,msg);
+            let url = this.GLOBAL.register
+            return this.axios({
+              method:'POST',
+              url: url,
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              xhrFields:{
+                withCredentials:true
+              },
+              async:false,
+              crossDomain: true,
+              data:JSON.stringify(data)
+            })
+              .then(response => {
+                console.log(response.data)
+                if (response.data.code === '000'){
+                  this.$message({
+                    type: 'success',
+                    message: response.data.msg
+                  });
+                  sessionStorage.setItem("name",this.resForm.user);
+                  localStorage.setItem('shopping', JSON.stringify({
+                    getman:this.logForm.user,
+                    commdityinfo :{},
+                  }));
+                  this.$router.push('/')
+                } else {
+                  this.$message.error(response.data.msg)
+                }
+              }).catch(function (error) {
+                console.log(error);
+              })
           } else {
-            this.$message('请正确填写信息');
+            this.$message(this.$t('notice.correct'));
             console.log('error submit!!');
             return false;
           }
         });
       },
-      //请求接口函数
-      submitData(data,url,msg){
-        let a = data;
-        let address = url;
-
-      }
     },
     created(){
     }

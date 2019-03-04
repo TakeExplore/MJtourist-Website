@@ -1,17 +1,20 @@
 <template>
   <div>
     <!--板块2-->
-      <div id="fh5co-tours" class="fh5co-section-gray">
+      <div id="fh5co-tours" class="fh5co-section-gray" v-if="travel">
         <div class="container">
           <div class="row">
             <div class="col-md-8 col-md-offset-2 text-center heading-section animate-box">
-              <h3>Hot Tours</h3>
-              <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+              <h3 v-if="locale === 'zh'">{{introduce.travel.cnname}}</h3>
+              <h3 v-if="locale === 'en'">{{introduce.travel.enname}}</h3>
+              <p>{{introduce.travel.columnContent}}</p>
             </div>
           </div>
           <div class="row">
             <!--卡片-->
-            <card></card>
+            <div>
+              <card :content="travel"></card>
+            </div>
             <!--按钮-->
             <div class="col-md-12 text-center animate-box">
               <p><a class="btn btn-primary btn-outline btn-lg" href="#">See All Offers <i class="el-icon-caret-right"></i></a></p>
@@ -20,21 +23,28 @@
         </div>
       </div>
     <!--板块3-->
-      <tips-box />
+
+      <tips-box :content="article"></tips-box>
     <!--板块4-->
-      <blog></blog>
+    <div id="fh5co-blog-section" class="fh5co-section-gray">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 text-center heading-section animate-box">
+            <h3 v-if="locale === 'zh'">{{introduce.spot.cnname}}</h3>
+            <h3 v-if="locale === 'en'">{{introduce.spot.enname}}</h3>
+            <p>{{introduce.spot.columnContent}}</p>
+          </div>
+        </div>a
+      </div>
+      <blog :content="spot"></blog>
+    </div>
     <!--板块5-->
     <div id="fh5co-destination">
       <div class="tour-fluid">
         <div class="row">
           <div class="col-md-12">
             <ul id="fh5co-destination-list" class="animate-box">
-              <li class="one-forth text-center" v-for="item in image.destinationOne" :style = item>
-                <a href="#">
-                  <div class="case-studies-summary">
-                    <h2>Los Angeles</h2>
-                  </div>
-                </a>
+              <li class="one-forth text-center" v-for="(item,index) in img" v-show="index < 5" :style = item>
               </li>
               <li class="one-half text-center">
                 <div class="title-bg">
@@ -44,12 +54,7 @@
                   </div>
                 </div>
               </li>
-              <li class="one-forth text-center" v-for="item in image.destinationTwo" :style = item>
-                <a href="#">
-                  <div class="case-studies-summary">
-                    <h2>Los Angeles</h2>
-                  </div>
-                </a>
+              <li class="one-forth text-center" v-for="(item,index) in img" v-show="index < 5" :style = item>
               </li>
             </ul>
           </div>
@@ -68,51 +73,23 @@
       components: {Card, TipsBox,Blog},
       data(){
         return{
-          image:{
-            bgi_cover:[{
-                backgroundImage: `url(${require('../../../static/images/cover_bg_1.jpg')})`
-              },
-            ],
-
-            destinationOne:[{
-                backgroundImage: `url(${require('../../common/images/place-1.jpg')})`
-              },
-              {
-                backgroundImage: `url(${require('../../common/images/place-2.jpg')})`
-              },
-              {
-                backgroundImage: `url(${require('../../common/images/place-3.jpg')})`
-              },
-              {
-                backgroundImage: `url(${require('../../common/images/place-4.jpg')})`
-              },
-              {
-                backgroundImage: `url(${require('../../common/images/place-5.jpg')})`
-              }
-
-            ],
-            destinationTwo:[{
-                backgroundImage: `url(${require('../../common/images/place-6.jpg')})`
-              },
-              {
-                backgroundImage: `url(${require('../../common/images/place-7.jpg')})`
-              },
-              {
-                backgroundImage: `url(${require('../../common/images/place-8.jpg')})`
-              },
-              {
-                backgroundImage: `url(${require('../../common/images/place-9.jpg')})`
-              },
-              {
-                backgroundImage: `url(${require('../../common/images/place-10.jpg')})`
-              }
-
-            ],
-          }
+          img:[],
+          list:[],
+          travel:[],
+          article:[],
+          spot:[],
+          introduce:{
+            travel:'',
+            spot:''
+          },
+          locale:this.$i18n.locale
         }
       },
       created(){
-        this.getList();
+        this.getList()
+        this.getTips()
+        this.getTravel()
+        this.getBlog()
       },
       methods:{
         getList(){
@@ -120,27 +97,116 @@
             "a": 123,
             "b": 123
           }
-          $.ajax({
-            url: "http://47.106.198.169/admin/getcolumn",
-            type: "POST",
+          return this.axios({
+            method:'POST',
+            url: this.GLOBAL.getcolumn,
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            crossDomain: true,
             data: JSON.stringify(data),
             xhrFields:{
               withCredentials:true
             },
+            async:false
+          })
+            .then(response => {
+              this.list = response.data
+              for (let a in this.list){
+                if (this.list[a].cnname === '旅游'){
+                  this.introduce.travel = this.list[a]
+                }
+                if (this.list[a].cnname === '攻略景点'){
+                  this.introduce.spot = this.list[a]
+                }
+              }
+            }).catch(function (error) {
+              console.log(error);
+            });
+        },
+        getTravel(){
+          let data = {"a": 123,}
+          return this.axios({
+            method:'POST',
+            url: this.GLOBAL.getentertainment,
             headers: {
-              "content-type": "application/json;charset=utf-8",
-              "Access-Control-Allow-Origin": "*",
-              "Access-Control-Allow-Headers": "X-Requested-With",
-              "Access-Control-Allow-Credentials": 'true'
+              'Content-Type': 'application/json'
             },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-              console.log("失败")
+            crossDomain: true,
+            data: JSON.stringify(data),
+            xhrFields:{
+              withCredentials:true
             },
-            success: function (res) {
-              console.log("上传前返回的参数:",res);
-            }
-          });
-        }
+            async:false
+          })
+            .then(response => {
+              this.travel = []
+              for (let a in response.data){
+                this.travel.push(response.data[a])
+                this.img.push({
+                  backgroundImage: `url(${response.data[a].imgadres})`
+                })
+              }
+              // console.log(this.contents)
+            }).catch(function (error) {
+              console.log(error);
+            });
+        },
+        getTips(){
+          let data = {"a": 123,}
+          return this.axios({
+            method:'POST',
+            url: this.GLOBAL.getarticle,
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            crossDomain: true,
+            data: JSON.stringify(data),
+            xhrFields:{
+              withCredentials:true
+            },
+            async:false
+          })
+            .then(response => {
+              this.article = []
+              for (let a in response.data){
+                if (a < 7){
+                  this.article.push(response.data[a])
+                }
+              }
+            }).catch(function (error) {
+              console.log(error);
+            });
+        },
+        getBlog(){
+          let data = {"a": 123,}
+          return this.axios({
+            method:'POST',
+            url: this.GLOBAL.getspot,
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            crossDomain: true,
+            data: JSON.stringify(data),
+            xhrFields:{
+              withCredentials:true
+            },
+            async:false
+          })
+            .then(response => {
+              this.spot = []
+              for (let a in response.data){
+                if (a < 4){
+                  this.spot.push(response.data[a])
+                  this.img.push({
+                    backgroundImage: `url(${response.data[a].imgadres})`
+                  })
+                }
+              }
+            }).catch(function (error) {
+              console.log(error);
+            });
+        },
       }
     }
 </script>

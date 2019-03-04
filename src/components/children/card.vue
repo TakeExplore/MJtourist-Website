@@ -1,15 +1,17 @@
 <template>
   <!--介绍卡片-->
   <div>
-  <div class="col-md-4 col-sm-6 fh5co-tours animate-box" data-animate-effect="fadeIn" v-for="item in card">
-    <div href="#"><img :src=item alt="Free HTML5 Website Template by FreeHTML5.co" class="img-responsive">
-      <div class="desc">
-        <span></span>
-        <h3>New York</h3>
-        <span>3 nights + Flight 5*Hotel</span>
-        <span class="price">$1,000</span>
-        <a class="btn btn-primary btn-outline" href="#">Book Now <i class="icon-arrow-right22"></i></a>
-      </div>
+  <div class="col-md-4 col-sm-6 fh5co-tours animate-box" data-animate-effect="fadeIn" v-if="content" v-for="(item,index) in content" v-show="selectShow(index)">
+    <div @click="getArticle(item)">
+      <router-link :to="/article/ + item.id"><img :src = item.imgadres class="img-responsive">
+        <div class="desc">
+          <span></span>
+          <h3>{{item.motherspot}}</h3>
+          <span>{{item.spendtime}}</span>
+          <span class="price">{{item.money}}</span>
+          <router-link class="btn btn-primary btn-outline" :to="/article/ + item.id">{{$t('more.book')}}</router-link>
+        </div>
+     </router-link>
     </div>
   </div>
   </div>
@@ -18,13 +20,27 @@
 <script>
     export default {
       name: "card",
+      props:['content','num'],
       data(){
         return{
-          card:[
-            require('../../common/images/place-1.jpg'),
-            require('../../common/images/place-2.jpg'),
-            require('../../common/images/place-3.jpg')
-          ],
+        }
+      },
+      created(){
+        console.log(this.content)
+      },
+      methods:{
+        selectShow(index){
+          if (this.num === 1){
+            return true
+          } else {
+            if (index < 3){
+              return true
+            }
+          }
+        },
+        getArticle(value){
+          localStorage.setItem('article', JSON.stringify(value));
+          console.log(value)
         }
       }
     }

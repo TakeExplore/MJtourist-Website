@@ -1,17 +1,20 @@
 <template>
   <div>
     <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="70px" class="demo-ruleForm">
-      <el-form-item label="账号" prop="user">
+      <el-form-item :label="$t('user.user')" prop="user">
         <el-input type="user" v-model="ruleForm2.user" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="密码" prop="pass">
+      <el-form-item :label="$t('user.oldpass')" prop="oldPsw">
+        <el-input type="password" v-model="ruleForm2.oldPsw" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item :label="$t('user.newpass')" prop="pass">
         <el-input type="password" v-model="ruleForm2.pass" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="确认密码" prop="checkPass">
+      <el-form-item :label="$t('user.checkpass')" prop="checkPass">
         <el-input type="password" v-model="ruleForm2.checkPass" autocomplete="off" ></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm2')" >修改</el-button>
+        <el-button type="primary" @click="submitForm('ruleForm2')" >{{$t('btn.update')}}</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -23,7 +26,7 @@
       data(){
         let checkUser = (rule, value, callback) => {
           if (value === '') {
-            callback(new Error('请输入账号'));
+            callback(new Error(this.$t('notice.usernotice')));
           } else {
             if (this.ruleForm2.user !== '') {
               this.$refs.ruleForm2.validateField('checkPass');
@@ -33,7 +36,7 @@
         };
         let validatePass = (rule, value, callback) => {
           if (value === '') {
-            callback(new Error('请输入密码'));
+            callback(new Error(this.$t('notice.passnotice')));
           } else {
             if (this.ruleForm2.checkPass !== '') {
               this.$refs.ruleForm2.validateField('checkPass');
@@ -43,9 +46,9 @@
         };
         let validatePass2 = (rule, value, callback) => {
           if (value === '') {
-            callback(new Error('请再次输入密码'));
+            callback(new Error(this.$t('notice.passagain')));
           } else if (value !== this.ruleForm2.pass) {
-            callback(new Error('两次输入密码不一致!'));
+            callback(new Error(this.$t('notice.checkpass')));
           } else {
             callback();
           }
@@ -53,10 +56,14 @@
         return{
           ruleForm2: {
             pass: '',
+            oldPsw:'',
             checkPass: '',
             user: ''
           },
           rules2: {
+            oldPsw: [
+              { validator: validatePass, trigger: 'blur' }
+            ],
             pass: [
               { validator: validatePass, trigger: 'blur' }
             ],
@@ -76,24 +83,29 @@
             if (valid) {
               return this.axios({
                 method:'POST',
-                url: "../static/json/user.json",
+                url: this.GLOBAL.userupdate,
                 headers: {
                   'Content-Type': 'application/json'
                 },
-                data: this.ruleForm2,
                 xhrFields:{
                   withCredentials:true
                 },
+                async:false,
+                crossDomain: true,
+                data:JSON.stringify({
+                  "username":this.ruleForm2.user,
+                  "password":this.ruleForm2.oldPsw,
+                  "newpassword":this.ruleForm2.pass
+                })
               })
               .then(response => {
-                if (response.data.user.msg === "1"){
-                  this.$message({
-                    message: '修改成功',
-                    type: 'success'
-                  });
-                } else {
-                  this.$message.error("修改失败，稍后再试哦");
-                }
+                this.$message({
+                  type: response.data.code === '000'?'success':'error',
+                  message: response.data.msg
+                });
+                document.cookie = 'ticket' + '=;  expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+                sessionStorage.clear(); //清除用户缓存
+                this.$router.push('/login')
               }).catch(function (error) {
                 console.log(error);
               })
@@ -104,16 +116,16 @@
           });
         },
         OnCancel() {
-          this.$confirm('是否取消当前编辑页面?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+          this.$confirm(this.$t('notice.canceltips'), {
+            confirmButtonText: this.$t('el.datepicker.confirm'),
+            cancelButtonText: this.$t('el.datepicker.cancel'),
             type: 'warning'
           }).then(() => {
             this.cancel();
           }).catch(() => {
             this.$message({
               type: 'info',
-              message: '继续编辑当前页面'
+              message: this.$t('notice.until')
             });
           });
         },

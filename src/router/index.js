@@ -1,58 +1,58 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import home from '@/components/home/home.vue'
-import travel from '@/components/travel/travel.vue'
-import tripKnow from '@/components/tripKnow/tripKnow.vue'
-import scenery from '@/components/scenery/scenery.vue'
-import hotel from '@/components/hotel/hotel.vue'
-import connect from '@/components/connect/connect.vue'
-import login from '@/components/login/login.vue'
-import manage from '@/components/manage/manage.vue'
 
 Vue.use(Router)
 
 let menu = {
+
+}
+export default new Router({
   routes: [
     {
       path: '/',
+      alias:'/home/:uid',
       name: 'home',
-      component: home
+      component: resolve => require(['@/components/home/home.vue'], resolve)
     },
     {
       path: '/manage',
       name: 'manage',
-      component: manage
+      component: resolve => require(['@/components/manage/manage.vue'], resolve)
     },
     {
       path: '/travel/:uid',
       name:'travel',
-      component:travel,
+      component:resolve => require(['@/components/travel/travel.vue'], resolve)
     },
     {
       path: '/tripKnow/:uid',
       name:'tripKnow',
-      component:tripKnow,
+      component:resolve => require(['@/components/tripKnow/tripKnow.vue'], resolve)
     },
     {
       path: '/scenery/:uid',
       name:'scenery',
-      component:scenery,
+      component:resolve => require(['@/components/scenery/scenery.vue'], resolve)
     },
     {
-      path: '/hotel',
+      path: '/hotel/:uid',
       name:'hotel',
-      component:hotel,
+      component:resolve => require(['@/components/hotel/hotel.vue'], resolve)
     },
     {
       path: '/connect/:uid',
       name:'connect',
-      component:connect,
+      component:resolve => require(['@/components/connect/connect.vue'], resolve)
     },
     {
       path: '/login',
       name:'login',
-      component:login,
+      component:resolve => require(['@/components/login/login.vue'], resolve)
+    },
+    {
+      path: '/article/:uid',
+      name:'article',
+      component:resolve => require(['@/components/children/writings.vue'], resolve)
     },
   ]
-}
-export default new Router(menu)
+})
