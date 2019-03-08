@@ -2,7 +2,7 @@ import enLocale from 'element-ui/lib/locale/lang/en'
 const en = {
   error:'error',
 	title:{
-		"title":"CSTATOUR"
+		"title":"California  Sunshine  Traveling  Agency"
 	},
   user:{
     'user':'username',

@@ -55,7 +55,7 @@
     },
     data() {
       return {
-        logo: require('../../../static/logo.png'),
+        logo: require('../../../static/logo.jpg'),
         menuIndex: '1',
       };
     },

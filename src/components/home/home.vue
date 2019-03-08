@@ -34,7 +34,7 @@
             <h3 v-if="locale === 'en'">{{introduce.spot.enname}}</h3>
             <p>{{introduce.spot.columnContent}}</p>
           </div>
-        </div>a
+        </div>
       </div>
       <blog :content="spot"></blog>
     </div>

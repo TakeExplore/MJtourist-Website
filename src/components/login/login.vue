@@ -122,7 +122,7 @@
         }
       };
       return{
-        logo: require('../../../static/logo.png'),
+        logo: require('../../../static/logo.jpg'),
         logForm: {
           pass: '',
           user: ''

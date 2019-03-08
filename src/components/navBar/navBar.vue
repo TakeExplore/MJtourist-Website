@@ -3,7 +3,10 @@
   <div id="fh5co-header-section" class="sticky-banner">
     <div class="container">
       <div class="nav-header">
-        <h1 id="fh5co-logo"><a href="/"><img :src=logo style="width: 15%">{{$t('title.title')}}</a></h1>
+        <h1 id="fh5co-logo">
+          <a href="/" v-if="language === 'zh'"><img :src=logo style="width: 15%;margin-right: 2%">{{$t('title.title')}}</a>
+          <a href="/" v-if="language === 'en'"><img :src=logo style="width: 6%;margin-right: 2%">{{$t('title.title')}}</a>
+        </h1>
         <nav id="fh5co-menu-wrap" role="navigation">
           <ul class="sf-menu" id="fh5co-primary-menu">
             <li v-for="item of menu" v-if="language === 'zh'">
@@ -29,7 +32,7 @@
             <li>
               <el-dropdown  @command="handleCommand">
                 <span class="el-dropdown-link">
-                  <router-link style="font-size: 16px;font-weight: normal" :to=path v-html="username"></router-link>
+                  <a style="font-size: 16px;font-weight: normal" @click="isLogin()" v-html="username"></a>
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item :command="$t('user.out')">{{$t('user.logout')}}</el-dropdown-item>
@@ -61,13 +64,12 @@
     components:{},
     data() {
       return {
-        logo: require('../../../static/logo.png'),
+        logo: require('../../../static/logo.jpg'),
         activeIndex: '1',
         activeIndex2: '1',
         headerFixed: true,
         list:[],
         menu:[],
-        path:"/login",
         language:'zh',
         username: this.$t('user.login')
       };
@@ -82,6 +84,13 @@
       await this.checkState()
     },
     methods: {
+      isLogin(){
+        if (sessionStorage.getItem('name') !== null){
+          this.$router.push('/')
+        } else {
+          this.$router.push('login')
+        }
+      },
       handleSelect(key, keyPath) {
         console.log(key, keyPath);
       },
@@ -120,13 +129,10 @@
       },
       checkState(){
         if (sessionStorage.getItem("name") !== null) {
-          // this.$set(this.username,sessionStorage.getItem("name"))
           this.username = sessionStorage.getItem("name");
-          // console.log(this.username)
-          this.path = '/'
           this.$forceUpdate();
         }else{
-          this.path = '/login'
+          // this.path = '/login'
           this.username = this.$t('user.login')
           localStorage.removeItem('shopping');//清除购物车
           sessionStorage.clear(); //清除用户缓存
@@ -140,7 +146,7 @@
         } else {
           this.username = this.$t('user.login')
           this.$forceUpdate();
-          this.path = '/login'
+          // this.path = '/login'
           document.cookie = 'ticket' + '=;  expires=Thu, 01 Jan 1970 00:00:01 GMT;'
           localStorage.removeItem('shopping');//清除购物车
           sessionStorage.clear(); //清除用户缓存
